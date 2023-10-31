@@ -20,6 +20,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/app/_components/ui/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 });
 
 function SignIn() {
+  const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,23 +49,13 @@ function SignIn() {
     });
 
     if (error) {
-      console.log(error);
+      toast({
+        description: "Invalid email or password",
+      });
       return;
     }
 
     router.push("/");
-
-    // if (error) {
-    //   toast({
-    //     variant: "destructive",
-    //     description: "Something went wrong. Please try again.",
-    //   });
-    //   return;
-    // }
-
-    // toast({
-    //   description: "Check your email for the confirmation link",
-    // });
   };
 
   return (
