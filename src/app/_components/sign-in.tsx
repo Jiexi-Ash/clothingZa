@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "./ui/form";
 
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
@@ -21,6 +21,8 @@ import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/app/_components/ui/use-toast";
+import { useState } from "react";
+import { Loader2Icon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -30,6 +32,7 @@ const formSchema = z.object({
 });
 
 function SignIn() {
+  const [isLoading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,6 +44,7 @@ function SignIn() {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
     const { email, password } = data;
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -49,6 +53,7 @@ function SignIn() {
     });
 
     if (error) {
+      setLoading(false);
       toast({
         description: "Invalid email or password",
       });
@@ -56,6 +61,7 @@ function SignIn() {
     }
 
     router.push("/");
+    setLoading(false);
   };
 
   return (
@@ -93,8 +99,8 @@ function SignIn() {
               )}
             />
             <div className="flex w-full flex-col space-y-2">
-              <Button type="submit" className="w-full">
-                Submit
+              <Button disabled={isLoading} type="submit" className="w-full">
+                {isLoading ? <Loader2Icon /> : "Sign In"}
               </Button>
               <Link className="text-xs hover:underline" href="/sign-in">
                 {"Already have an account? Sign in"}

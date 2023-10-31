@@ -19,6 +19,9 @@ import { Input } from "./ui/input";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
+import { useState } from "react";
+import { useToast } from "@/app/_components/ui/use-toast";
+import { Loader2Icon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -28,6 +31,8 @@ const formSchema = z.object({
 });
 
 function SignUp() {
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,6 +42,7 @@ function SignUp() {
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setLoading(true);
     const { email, password } = data;
 
     const { error } = await supabase.auth.signUp({
@@ -47,17 +53,19 @@ function SignUp() {
       },
     });
 
-    // if (error) {
-    //   toast({
-    //     variant: "destructive",
-    //     description: "Something went wrong. Please try again.",
-    //   });
-    //   return;
-    // }
+    if (error) {
+      setLoading(false);
+      toast({
+        variant: "destructive",
+        description: "Something went wrong. Please try again.",
+      });
+      return;
+    }
 
-    // toast({
-    //   description: "Check your email for the confirmation link",
-    // });
+    setLoading(false);
+    toast({
+      description: "Check your email for the confirmation link",
+    });
   };
 
   return (
@@ -95,8 +103,8 @@ function SignUp() {
               )}
             />
             <div className="flex w-full flex-col space-y-2">
-              <Button type="submit" className="w-full">
-                Submit
+              <Button disabled={isLoading} type="submit" className="w-full">
+                {isLoading ? <Loader2Icon /> : "Sign Up"}
               </Button>
               <Link className="text-xs hover:underline" href="/sign-in">
                 {"Already have an account? Sign in"}
