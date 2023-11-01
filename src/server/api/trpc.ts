@@ -6,12 +6,15 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "@/server/db";
+import type { User } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 /**
  * 1. CONTEXT
@@ -23,6 +26,7 @@ import { db } from "@/server/db";
 
 interface CreateContextOptions {
   headers: Headers;
+  user: User | null;
 }
 
 /**
@@ -39,6 +43,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     headers: opts.headers,
     db,
+    user: opts.user,
   };
 };
 
@@ -48,11 +53,26 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: { req: NextRequest }) => {
+export const createTRPCContext = async (opts: { req: NextRequest }) => {
   // Fetch stuff that depends on the request
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    },
+  );
+
+  const user = await supabase.auth.getUser()
 
   return createInnerTRPCContext({
     headers: opts.req.headers,
+    user: user?.data.user
   });
 };
 
@@ -100,3 +120,44 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+/** 
+ * Authenticated procedure
+ */
+ const isAuth = t.middleware(({ctx, next}) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({ code: 'UNAUTHORIZED'})
+    }
+  
+    return next({
+      ctx: {
+        ...ctx,
+        userId: ctx.user.id
+      }
+    })
+  }
+)
+
+export const protectedProcedure = publicProcedure.use(isAuth)
+
+// const t = initTRPC.create();
+// const middleware = t.middleware;
+
+// const isAuth = middleware(async (opts) => {
+//     const supabase = await supabaseServerComponentClient();
+
+//     const {
+//       data: { user },
+//     } = await supabase.auth.getUser();
+
+//     if (!user || !user.id) {
+//         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Unauthorized' });
+//     }
+
+//     return opts.next({
+//         ctx: {
+//             userId: user.id,
+//             user,
+//         },
+//     })
+// })
