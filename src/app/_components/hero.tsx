@@ -1,10 +1,12 @@
 import React from "react";
 import { Button } from "./ui/button";
+import Navbar from "./navbar";
 
 function Hero() {
   return (
     <div className="relative min-h-screen w-full">
       <div className="absolute inset-0 z-30 flex h-full w-full flex-col bg-black/60">
+        <Navbar />
         <div className="flex h-full w-full items-center justify-center">
           <div className="flex max-w-4xl flex-col space-y-3 px-10 lg:px-0">
             <h1 className="font-orbitron text-center text-xl font-semibold uppercase text-slate-300 lg:text-5xl">
