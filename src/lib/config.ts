@@ -1,4 +1,4 @@
-import { MainNav } from "@/app/types";
+import type { AdminNav, MainNav } from "@/app/types";
 
 export const navData = [
     {
@@ -96,3 +96,23 @@ export const navData = [
       },
     
   ] satisfies MainNav[]
+
+
+  export const adminNavData = [
+    {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: "LayoutGrid",
+
+    },
+    {
+        title: "My Orders",
+        href: "/orders",
+        icon: "ShoppingBag",
+    },
+    {
+        title: "Products",
+        href: "/products",
+        icon: "PackageOpen",
+    }
+  ] satisfies AdminNav[]

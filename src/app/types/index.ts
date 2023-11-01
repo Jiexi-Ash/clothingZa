@@ -10,3 +10,9 @@ export type NavItem = {
     description?: string;
     items?: NavItem[];
 }
+
+export type AdminNav = {
+    title: string;
+    href: string;
+    icon: string;
+}
