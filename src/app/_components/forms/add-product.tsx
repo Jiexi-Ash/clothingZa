@@ -28,6 +28,7 @@ import { Input } from "@/app/_components/ui/input";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import UplaodProductImage from "../uploadImage";
 
 const formData = z
   .object({
@@ -80,6 +81,7 @@ const formData = z
   });
 
 function AddProduct() {
+  const [image, setImage] = React.useState<File | null>(null);
   const form = useForm<z.infer<typeof formData>>({
     resolver: zodResolver(formData),
     defaultValues: {
@@ -119,9 +121,10 @@ function AddProduct() {
       <DialogTrigger asChild>
         <Button>Add Product</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[700px] overflow-auto">
         <DialogHeader className="text-left">
           <DialogTitle>Add Product</DialogTitle>
+          <UplaodProductImage setImage={setImage} />
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
