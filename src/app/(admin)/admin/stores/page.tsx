@@ -1,4 +1,5 @@
 import DashboardNav from "@/app/_components/dashboard/dashboard-nav";
+import AddStore from "@/app/_components/forms/add-store";
 import React from "react";
 
 function StoresPage() {
@@ -8,7 +9,10 @@ function StoresPage() {
         <DashboardNav />
       </div>
       <div className="ml-[300px] min-h-screen w-full bg-slate-100 px-10 py-10">
-        <div className="flex w-full justify-between"></div>
+        <div className="flex w-full justify-between">
+          <h1 className="text-2xl font-medium">Stores</h1>
+          <AddStore />
+        </div>
       </div>
     </div>
   );

@@ -57,7 +57,7 @@ function UplaodProductImage({
           }`}
         >
           {imagePreview ? (
-            <Image src={imagePreview} className="object-cover" alt="" fill />
+            <Image src={imagePreview} className="object-contain" alt="" fill />
           ) : (
             handleImage()
           )}
