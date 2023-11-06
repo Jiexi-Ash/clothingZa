@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import Icon from "../icon";
 import { api } from "@/trpc/server";
+import UpdateStore from "../forms/update-store";
 
 async function DashboardNav() {
   const data = await api.store.getUserStore.query();
@@ -56,7 +57,9 @@ const StoreCard = ({ name, banner }: StoreCardProps) => {
         <p className="text-sm text-gray-400">{name}</p>
       </div>
       <div className="my-10 h-[200px] w-full  px-6">
-        <div className="h-full w-full rounded-lg bg-red-500"></div>
+        <div className="relative h-full w-full rounded-lg bg-gray-200">
+          <UpdateStore />
+        </div>
       </div>
     </div>
   );
