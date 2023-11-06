@@ -28,7 +28,7 @@ import { Input } from "@/app/_components/ui/input";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import UplaodProductImage from "../uploadImage";
+import UplaodProductImage from "../ImagePrev";
 import { api } from "@/trpc/react";
 import { Loader } from "lucide-react";
 

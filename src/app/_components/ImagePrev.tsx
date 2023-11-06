@@ -4,19 +4,19 @@ import React, { useState, useTransition } from "react";
 import { Button } from "@/app/_components/ui/button";
 import Image from "next/image";
 
-interface UplaodProductImageProps {
+interface ImagePrevProps {
   showPreview?: boolean;
   setImage: React.Dispatch<React.SetStateAction<File | null>>;
   handleUpload?: () => void;
   isPending?: boolean;
 }
 
-function UplaodProductImage({
+function ImagePrev({
   setImage,
   showPreview = false,
   isPending,
   handleUpload,
-}: UplaodProductImageProps) {
+}: ImagePrevProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -94,4 +94,4 @@ function UplaodProductImage({
   );
 }
 
-export default UplaodProductImage;
+export default ImagePrev;

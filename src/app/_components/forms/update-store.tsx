@@ -5,7 +5,6 @@ import { Button } from "@/app/_components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,7 +14,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -28,9 +26,10 @@ import { Input } from "@/app/_components/ui/input";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import UplaodProductImage from "../uploadImage";
 import { api } from "@/trpc/react";
 import { PencilIcon } from "lucide-react";
+import ImagePrev from "../ImagePrev";
+import { deleteFromS3, uploadToS3 } from "@/lib/s3";
 
 const formSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -38,21 +37,40 @@ const formSchema = z.object({
 });
 
 interface UpdateStoreProps {
-  name?: string;
+  storeName: string;
   address?: string;
+  banner_key?: string | null;
 }
-function UpdateStore({ name, address }: UpdateStoreProps) {
-  const [image, setImage] = React.useState<string | null>(null);
+function UpdateStore({ storeName, address, banner_key }: UpdateStoreProps) {
+  const [image, setImage] = React.useState<File | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: name,
+      name: storeName,
       address: address,
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { name, address } = data;
+
+    await handleUpload();
+  };
+
+  const handleUpload = async () => {
+    if (!image) return;
+    if (image.size > 1024 * 1024 * 10) {
+      alert("Image size is too large.");
+      return;
+    }
+
+    try {
+      if (banner_key) {
+        await deleteFromS3(banner_key);
+      }
+      const data = await uploadToS3(image, storeName);
+      console.log(data);
+    } catch (error) {}
   };
 
   return (
@@ -66,6 +84,7 @@ function UpdateStore({ name, address }: UpdateStoreProps) {
         <DialogHeader>
           <DialogTitle>Update Store</DialogTitle>
         </DialogHeader>
+        <ImagePrev setImage={setImage} />
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -75,7 +94,7 @@ function UpdateStore({ name, address }: UpdateStoreProps) {
                 <FormItem>
                   <FormLabel>Store</FormLabel>
                   <FormControl>
-                    <Input placeholder="Store anme" {...field} />
+                    <Input placeholder="Store name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

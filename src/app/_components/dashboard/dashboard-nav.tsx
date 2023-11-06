@@ -8,6 +8,7 @@ import UpdateStore from "../forms/update-store";
 async function DashboardNav() {
   const data = await api.store.getUserStore.query();
 
+  if (!data) return null;
   console.log(data);
   return (
     <div className="l flex h-full w-full flex-col space-y-8 pt-10">
@@ -44,7 +45,7 @@ async function DashboardNav() {
 export default DashboardNav;
 
 interface StoreCardProps {
-  name?: string;
+  name: string;
   banner?: string | null;
 }
 const StoreCard = ({ name, banner }: StoreCardProps) => {
@@ -58,7 +59,7 @@ const StoreCard = ({ name, banner }: StoreCardProps) => {
       </div>
       <div className="my-10 h-[200px] w-full  px-6">
         <div className="relative h-full w-full rounded-lg bg-gray-200">
-          <UpdateStore />
+          <UpdateStore storeName={name} banner_key={banner} />
         </div>
       </div>
     </div>
