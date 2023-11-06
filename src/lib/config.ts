@@ -98,7 +98,7 @@ export const navData = [
   ] satisfies MainNav[]
 
 
-  export const adminNavData = [
+  export const dashboardNav = [
     {
         title: "Dashboard",
         href: "/dashboard",
@@ -109,6 +109,25 @@ export const navData = [
         title: "My Orders",
         href: "/orders",
         icon: "ShoppingBag",
+    },
+    {
+        title: "Products",
+        href: "/products",
+        icon: "PackageOpen",
+    }
+  ] satisfies AdminNav[]
+
+  export const AdminNavLinks = [
+    {
+        title: "Dashboard",
+        href: "/dashboard",
+        icon: "LayoutGrid",
+
+    },
+    {
+        title: "Stores",
+        href: "/stores",
+        icon: "Store",
     },
     {
         title: "Products",
