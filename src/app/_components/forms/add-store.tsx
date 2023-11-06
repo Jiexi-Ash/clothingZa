@@ -29,6 +29,8 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import UplaodProductImage from "../uploadImage";
+import { api } from "@/trpc/react";
+import { Loader } from "lucide-react";
 
 const formData = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -37,6 +39,17 @@ const formData = z.object({
 
 function AddStore() {
   const [image, setImage] = React.useState<File | null>(null);
+
+  const { mutate: createStore, isLoading } = api.store.createStore.useMutation({
+    onSuccess: (data) => {
+      setImage(null);
+      console.log("Successfully created store");
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
   const form = useForm<z.infer<typeof formData>>({
     resolver: zodResolver(formData),
     defaultValues: {
@@ -48,9 +61,9 @@ function AddStore() {
   const onSubmit = (data: z.infer<typeof formData>) => {
     const { name, address } = data;
 
-    console.log(data);
-    form.setError("name", {
-      message: "Name is required",
+    createStore({
+      name,
+      address,
     });
   };
   return (
@@ -93,7 +106,7 @@ function AddStore() {
             />
 
             <DialogFooter>
-              <Button type="submit">Add Product</Button>
+              <Button type="submit">{isLoading ? <Loader /> : "Submit"}</Button>
             </DialogFooter>
           </form>
         </Form>
