@@ -31,6 +31,36 @@ model store {
     user      user     @relation(fields: [userId], references: [id])
 }
 
+model product {
+    id          Int      @id @default(autoincrement())
+    name        String
+    description String
+    price       price[]
+    images      images[]
+}
+
+model size {
+    id    Int     @id @default(autoincrement())
+    name  String
+    price price[]
+}
+
+model price {
+    id        Int     @id @default(autoincrement())
+    price     Float
+    productId Int
+    sizeId    Int
+    product   product @relation(fields: [productId], references: [id])
+    size      size    @relation(fields: [sizeId], references: [id])
+}
+
+model images {
+    id        Int     @id @default(autoincrement())
+    key       String
+    productId Int
+    product   product @relation(fields: [productId], references: [id])
+}
+
 enum Role {
     ADMIN
     USER
