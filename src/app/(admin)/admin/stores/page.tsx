@@ -8,7 +8,7 @@ function StoresPage() {
       <div className="fixed flex h-full w-[80px] flex-col items-center border-r bg-white  shadow-2xl shadow-black lg:w-[300px] lg:items-start">
         <DashboardNav />
       </div>
-      <div className="ml-[300px] min-h-screen w-full bg-slate-100 px-10 py-10">
+      <div className="ml-[80px] min-h-screen w-full bg-slate-100 px-10 py-10 lg:ml-[300px]">
         <div className="flex w-full justify-between">
           <h1 className="text-2xl font-medium">Stores</h1>
           <AddStore />
