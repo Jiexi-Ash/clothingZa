@@ -24,4 +24,23 @@ export const storeRouter = createTRPCRouter({
             });
         }
     }),
+
+    getUserStore: protectedProcedure.query(async ({ ctx }) => {
+        const userId = ctx.userId;
+
+        const store = await ctx.db.store.findFirst({
+            where: {
+                userId
+            },
+            select: {
+                id: true,
+                name: true,
+                address: true
+            }
+        });
+
+        return store;
+
+    
+    })
 });
