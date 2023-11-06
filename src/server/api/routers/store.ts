@@ -31,11 +31,13 @@ export const storeRouter = createTRPCRouter({
         const store = await ctx.db.store.findFirst({
             where: {
                 userId
+
             },
             select: {
                 id: true,
                 name: true,
-                address: true
+                address: true,
+                banner_key: true,
             }
         });
 
