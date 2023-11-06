@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import Icon from "../icon";
 
-function AdminNav() {
+function DashboardNav() {
   return (
     <div className="flex w-full flex-col space-y-8 pt-10 lg:px-16">
       <div className="">
@@ -33,4 +33,4 @@ function AdminNav() {
   );
 }
 
-export default AdminNav;
+export default DashboardNav;
