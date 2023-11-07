@@ -67,7 +67,15 @@ function UpdateStore({ storeName, address, banner_key }: UpdateStoreProps) {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { name, address } = data;
 
-    await handleUpload();
+    const uploadData = await handleUpload();
+
+    if (uploadData?.file_key) {
+      updateStore({
+        name,
+        address,
+        banner_key: uploadData.file_key,
+      });
+    }
   };
 
   const handleUpload = async () => {
@@ -82,7 +90,7 @@ function UpdateStore({ storeName, address, banner_key }: UpdateStoreProps) {
         await deleteFromS3(banner_key);
       }
       const data = await uploadToS3(image, storeName);
-      console.log(data);
+      return data;
     } catch (error) {}
   };
 
