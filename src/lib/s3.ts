@@ -38,17 +38,6 @@ export async function uploadToS3(file: File, storeName: string) {
     } catch (error) {}
 }
 
-export function getS3Url(file_key: string): string {
-
-    if (!file_key) {
-        return "";
-    }
-    const url = `https://${process.env.NEXT_PUBLIC_BUCKET_NAME}.s3.af-south-1.amazonaws.com/${file_key.replace(' ', '+')}`;
-    
-    return url;
-}
-
-
 export async function deleteFromS3(file_key: string) {
     try {
         AWS.config.update({
