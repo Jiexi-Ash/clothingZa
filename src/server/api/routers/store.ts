@@ -44,5 +44,38 @@ export const storeRouter = createTRPCRouter({
         return store;
 
     
-    })
+    }),
+
+    updateStore: protectedProcedure.input(z.object({ name: z.string().min(3), address: z.string().min(3), banner_key:z.string() })).mutation(async ({ ctx, input }) => {
+        const { name, address, banner_key } = input;
+
+        const userId = ctx.userId;
+
+        const store = await ctx.db.store.findFirst({
+            where: {
+                userId
+            }
+        });
+
+        if (!store) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Error updating store",
+            });
+        }
+
+        await ctx.db.store.update({
+            where: {
+                userId,
+                id: store.id
+            },
+            data: {
+                name,
+                address,
+                banner_key
+            },
+        });
+
+        
+    }),
 });

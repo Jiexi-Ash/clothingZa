@@ -51,6 +51,19 @@ function UpdateStore({ storeName, address, banner_key }: UpdateStoreProps) {
     },
   });
 
+  const utils = api.useContext();
+
+  const { mutate: updateStore, isLoading } = api.store.updateStore.useMutation({
+    onError: (error) => {
+      console.log(error);
+    },
+    onSuccess: async (data) => {
+      // invalidate query
+      console.log(data);
+      await utils.store.getUserStore.invalidate();
+    },
+  });
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const { name, address } = data;
 
