@@ -36,7 +36,11 @@ async function DashboardNav() {
             ))}
           </ul>
         </nav>
-        <StoreCard name={data?.name} banner={data?.banner_key} />
+        <StoreCard
+          name={data?.name}
+          address={data?.address}
+          banner={data?.banner_key}
+        />
       </div>
     </div>
   );
@@ -47,8 +51,9 @@ export default DashboardNav;
 interface StoreCardProps {
   name: string;
   banner?: string | null;
+  address?: string;
 }
-const StoreCard = ({ name, banner }: StoreCardProps) => {
+const StoreCard = ({ name, banner, address }: StoreCardProps) => {
   return (
     <div className="my-10 flex flex-col space-y-4">
       <div className="hiddem px-6 lg:block">
@@ -59,7 +64,7 @@ const StoreCard = ({ name, banner }: StoreCardProps) => {
       </div>
       <div className="my-10 h-[200px] w-full  px-6">
         <div className="relative h-full w-full rounded-lg bg-gray-200">
-          <UpdateStore storeName={name} banner_key={banner} />
+          <UpdateStore storeName={name} address={address} banner_key={banner} />
         </div>
       </div>
     </div>
