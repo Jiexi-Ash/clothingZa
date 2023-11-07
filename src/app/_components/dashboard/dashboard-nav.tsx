@@ -4,11 +4,16 @@ import React from "react";
 import Icon from "../icon";
 import { api } from "@/trpc/server";
 import UpdateStore from "../forms/update-store";
+import { getS3Url } from "@/lib/s3";
+import Image from "next/image";
 
 async function DashboardNav() {
   const data = await api.store.getUserStore.query();
 
   if (!data) return null;
+  const url = data.banner_key
+    ? await api.store.getS3Url.query({ file_key: data.banner_key })
+    : "";
   console.log(data);
   return (
     <div className="l flex h-full w-full flex-col space-y-8 pt-10">
@@ -40,6 +45,7 @@ async function DashboardNav() {
           name={data?.name}
           address={data?.address}
           banner={data?.banner_key}
+          url={url}
         />
       </div>
     </div>
@@ -52,8 +58,9 @@ interface StoreCardProps {
   name: string;
   banner?: string | null;
   address?: string;
+  url: string;
 }
-const StoreCard = ({ name, banner, address }: StoreCardProps) => {
+const StoreCard = ({ name, banner, address, url }: StoreCardProps) => {
   return (
     <div className="my-10 flex flex-col space-y-4">
       <div className="hiddem px-6 lg:block">
@@ -63,8 +70,9 @@ const StoreCard = ({ name, banner, address }: StoreCardProps) => {
         <p className="text-sm text-gray-400">{name}</p>
       </div>
       <div className="my-10 h-[200px] w-full  px-6">
-        <div className="relative h-full w-full rounded-lg bg-gray-200">
+        <div className="relative h-full w-full rounded-lg border">
           <UpdateStore storeName={name} address={address} banner_key={banner} />
+          <Image src={url} fill alt={name} className="object-contain" />
         </div>
       </div>
     </div>

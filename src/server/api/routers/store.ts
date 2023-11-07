@@ -78,4 +78,14 @@ export const storeRouter = createTRPCRouter({
 
         
     }),
+
+    getS3Url: publicProcedure.input(z.object({file_key:z.string()})).query(({input}) => {
+        const { file_key } = input;
+        if (!file_key) {
+            return "";
+        }
+        const url = `https://${process.env.NEXT_PUBLIC_BUCKET_NAME}.s3.af-south-1.amazonaws.com/${file_key.replace(' ', '+')}`;
+        
+        return url;
+    }),
 });
