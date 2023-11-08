@@ -89,4 +89,22 @@ export const productRouter = createTRPCRouter({
     }
   }),
 
+
+  getProducts: protectedProcedure.mutation(async ({ ctx }) => {
+    const products = await ctx.db.product.findMany(
+      {
+        include: {
+          price: {
+            include: {
+              size: true
+            }
+          },
+          images: true
+        }
+      }
+    )
+
+    return products;
+  }),
+
 });
