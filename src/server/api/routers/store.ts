@@ -88,4 +88,43 @@ export const storeRouter = createTRPCRouter({
         
         return url;
     }),
+
+    getAllStoreProducts: protectedProcedure.query(async ({ ctx }) => {
+        const userId = ctx.userId;
+    
+        const store = await ctx.db.store.findFirst({
+          where: {
+            userId
+          }
+        });
+    
+        if (!store) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Error updating store",
+          });
+        }
+    
+        const products = await ctx.db.product.findMany({
+          where: {
+            storeId: store.id
+          },
+          include: {
+            images: {
+                select: {
+                    id: true,
+                    key: true,
+                }
+            },
+            price: {
+                select: {
+                    size: true,
+                    
+                }
+            },   
+          }   
+        });
+    
+        return products;
+      }),
 });

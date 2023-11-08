@@ -5,6 +5,9 @@ import React from "react";
 
 async function DashboardProductsPage() {
   const data = await api.store.getUserStore.query();
+  const productData = await api.store.getAllStoreProducts.query();
+
+  console.log(productData);
 
   if (!data) return null;
   return (
