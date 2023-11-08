@@ -14,6 +14,7 @@ async function DashboardProductsPage() {
       </div>
       <div className="ml-[80px] min-h-screen w-full bg-slate-100 px-10 py-10 lg:ml-[300px]">
         <div className="flex w-full justify-between">
+          <h1 className="text-2xl font-medium">My Products</h1>
           <AddProduct storeName={data.name} />
         </div>
       </div>
