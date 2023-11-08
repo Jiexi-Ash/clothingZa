@@ -38,6 +38,7 @@ export async function uploadToS3(file: File, storeName: string) {
     } catch (error) {}
 }
 
+
 export async function deleteFromS3(file_key: string) {
     try {
         AWS.config.update({
