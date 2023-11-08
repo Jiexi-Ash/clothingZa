@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure, protectedProcedure } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 
-export const postRouter = createTRPCRouter({
+export const productRouter = createTRPCRouter({
   hello: publicProcedure
     .input(z.object({ text: z.string() }))
     .query(({ input }) => {
@@ -25,8 +25,9 @@ export const postRouter = createTRPCRouter({
     largeSize: z.coerce.number().optional(),
     extraLargeSize: z.coerce.number().optional(),
     extraExtraLargeSize: z.coerce.number().optional(),
+    image_key: z.string(),
   })).mutation(async ({ ctx, input }) => {
-    const { name, description, smallPrice, mediumPrice, largePrice, extraLargePrice, extraExtraLargePrice, smallSize, mediumSize, largeSize, extraLargeSize, extraExtraLargeSize } = input;
+    const { name, description, smallPrice, mediumPrice, largePrice, extraLargePrice, extraExtraLargePrice, smallSize, mediumSize, largeSize, extraLargeSize, extraExtraLargeSize, image_key } = input;
     const userId = ctx.userId;
 
     const store = await ctx.db.store.findFirst({
@@ -62,21 +63,25 @@ export const postRouter = createTRPCRouter({
             },
           },
           price: {
-            create: productQuantitySizeAndPriceArray.map((price) => ({
-              name: price.size,
-              price: price.price ?? 0,
+            create: productQuantitySizeAndPriceArray.map((item) => ({
+              price: item.price ?? 0,
               size: {
                 create: {
-                  quantity: price.quantity ?? 0,
-                  name: price.size,
-                  size: price.size,
+                  quantity: item.quantity ?? 0,
+                  size: item.size,
                 },
               },
             })),
           },
+          images: {
+            create: {
+              key: image_key,
+            },
+          },
         },
       });
     } catch (error) {
+      console.log(error);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Error creating product",

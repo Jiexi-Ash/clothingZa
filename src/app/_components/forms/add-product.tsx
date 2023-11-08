@@ -29,6 +29,8 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import UplaodProductImage from "../ImagePrev";
+import { uploadToS3 } from "@/lib/s3";
+import { api } from "@/trpc/react";
 
 const formData = z
   .object({
@@ -80,7 +82,11 @@ const formData = z
     }
   });
 
-function AddProduct() {
+interface AddProductProps {
+  storeName: string;
+}
+
+function AddProduct({ storeName }: AddProductProps) {
   const [image, setImage] = React.useState<File | null>(null);
   const form = useForm<z.infer<typeof formData>>({
     resolver: zodResolver(formData),
@@ -100,21 +106,65 @@ function AddProduct() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formData>) => {
+  const { mutate: createProduct } = api.product.addProduct.useMutation({
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof formData>) => {
     const {
       name,
       description,
       smallSize,
+      smallPrice,
+      mediumPrice,
+      largePrice,
+      extraLargePrice,
+      extraExtraLargePrice,
       mediumSize,
       largeSize,
       extraLargeSize,
       extraExtraLargeSize,
     } = data;
 
-    console.log(data);
-    form.setError("name", {
-      message: "Name is required",
-    });
+    const uploadData = await handleUplaod();
+
+    if (uploadData?.file_key) {
+      createProduct({
+        name,
+        description,
+        smallSize,
+        mediumSize,
+        largeSize,
+        extraLargeSize,
+        extraExtraLargeSize,
+        smallPrice,
+        mediumPrice,
+        largePrice,
+        extraLargePrice,
+        extraExtraLargePrice,
+        image_key: uploadData.file_key,
+      });
+    }
+  };
+
+  const handleUplaod = async () => {
+    if (!image) return;
+
+    if (image.size > 1024 * 1024 * 10) {
+      alert("Image size is too large.");
+      return;
+    }
+    try {
+      const data = await uploadToS3(image, storeName);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <Dialog>
