@@ -88,6 +88,7 @@ interface AddProductProps {
 
 function AddProduct({ storeName }: AddProductProps) {
   const [image, setImage] = React.useState<File | null>(null);
+  const utils = api.useContext();
   const form = useForm<z.infer<typeof formData>>({
     resolver: zodResolver(formData),
     defaultValues: {
@@ -107,8 +108,11 @@ function AddProduct({ storeName }: AddProductProps) {
   });
 
   const { mutate: createProduct } = api.product.addProduct.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      console.log("success");
+      await utils.store.getAllStoreProducts.invalidate();
       console.log(data);
+      form.reset();
     },
     onError: (error) => {
       console.log(error);
