@@ -16,7 +16,7 @@ async function DashboardProducts() {
 
   console.log(productData);
   return (
-    <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {productData?.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
@@ -43,7 +43,7 @@ const ProductCard = async ({ product }: { product: ProductGetAll[number] }) => {
         </AspectRatio>
       </CardContent>
       <CardFooter>
-        <p className="flex w-full items-center justify-center font-bold">
+        <p className="flex w-full items-center justify-center text-sm font-bold">
           {product.name}
         </p>
       </CardFooter>
