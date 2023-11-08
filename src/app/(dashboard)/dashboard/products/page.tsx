@@ -1,13 +1,11 @@
 import DashboardNav from "@/app/_components/dashboard/dashboard-nav";
+import DashboardProducts from "@/app/_components/dashboard/products";
 import AddProduct from "@/app/_components/forms/add-product";
 import { api } from "@/trpc/server";
 import React from "react";
 
 async function DashboardProductsPage() {
   const data = await api.store.getUserStore.query();
-  const productData = await api.store.getAllStoreProducts.query();
-
-  console.log(productData);
 
   if (!data) return null;
   return (
@@ -20,6 +18,7 @@ async function DashboardProductsPage() {
           <h1 className="text-2xl font-medium">My Products</h1>
           <AddProduct storeName={data.name} />
         </div>
+        <DashboardProducts />
       </div>
     </div>
   );
