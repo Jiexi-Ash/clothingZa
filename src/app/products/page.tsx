@@ -15,6 +15,7 @@ import { AspectRatio } from "../_components/ui/aspect-ratio";
 import Image from "next/image";
 import { Separator } from "../_components/ui/separator";
 import { Button } from "../_components/ui/button";
+import Navbar from "../_components/navbar";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type getAllProducts = RouterOutput["product"]["getAllProducts"];
@@ -24,6 +25,7 @@ async function ProductsPage() {
   console.log(productsData);
   return (
     <div className="flex min-h-screen w-full flex-col bg-darkbg bg-cover bg-no-repeat">
+      <Navbar />
       <div className="mt-[60px] flex h-full w-full flex-col gap-10 px-20">
         <div className="grid w-full gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {productsData.map((product) => (
