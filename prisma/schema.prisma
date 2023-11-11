@@ -34,28 +34,21 @@ model store {
 }
 
 model product {
-    id          Int      @id @default(autoincrement())
-    name        String
-    description String
-    price       price[]
-    images      images[]
-    storeId     String
-    store       store    @relation(fields: [storeId], references: [id])
+    id           Int            @id @default(autoincrement())
+    name         String
+    description  String
+    images       images[]
+    storeId      String
+    store        store          @relation(fields: [storeId], references: [id])
+    priceAndSize priceAndSize[]
 }
 
-model price {
+model priceAndSize {
     id        Int     @id @default(autoincrement())
+    price     Float
+    size      String
     productId Int
-    sizeId    Int
-    product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
-    size      sizes   @relation(fields: [sizeId], references: [id], onDelete: Cascade)
-}
-
-model sizes {
-    id       Int     @id @default(autoincrement())
-    size     String
-    quantity Int
-    price    price[]
+    product   product @relation(fields: [productId], references: [id])
 }
 
 model images {

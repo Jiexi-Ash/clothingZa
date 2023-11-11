@@ -64,11 +64,11 @@ export const productRouter = createTRPCRouter({
           },
           price: {
             create: productQuantitySizeAndPriceArray.map((item) => ({
-              price: item.price ?? 0,
               size: {
                 create: {
                   quantity: item.quantity ?? 0,
                   size: item.size,
+                 
                 },
               },
             })),
@@ -99,7 +99,8 @@ export const productRouter = createTRPCRouter({
               size: {
                 select: {
                   size: true,
-                  quantity: true
+                  quantity: true,
+                  price: true,
                 }
               }
             }
