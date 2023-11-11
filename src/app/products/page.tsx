@@ -21,8 +21,9 @@ type getAllProducts = RouterOutput["product"]["getAllProducts"];
 
 async function ProductsPage() {
   const productsData = await api.product.getAllProducts.query();
+  console.log(productsData);
   return (
-    <div className="bg-darkbg flex min-h-screen w-full flex-col bg-cover bg-no-repeat">
+    <div className="flex min-h-screen w-full flex-col bg-darkbg bg-cover bg-no-repeat">
       <div className="mt-[60px] flex h-full w-full flex-col gap-10 px-20">
         <div className="grid w-full gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {productsData.map((product) => (
@@ -45,7 +46,15 @@ const ProductCard = async ({
     ? await api.store.getS3Url.query({ file_key: product.images[0]?.key })
     : "";
 
-  // const price = product.price.size
+  // map through the price and size array
+  // get the lowest price
+
+  const prices = product.priceAndsize
+    .filter((item) => item.price > 0)
+    .map((item) => item.price);
+
+  const lowestPrice = Math.min(...prices);
+
   return (
     <Link href={`/products/${product.id}`}>
       <Card className="rounded-md border border-[#72FFFF]/70 bg-transparent pt-4">
@@ -55,7 +64,7 @@ const ProductCard = async ({
               src={url}
               fill
               className="rounded-md bg-center object-contain"
-              alt={product.name as string}
+              alt={product.name}
               loading="lazy"
             />
           </AspectRatio>
@@ -67,7 +76,7 @@ const ProductCard = async ({
           <div className="flex w-full flex-col space-y-2">
             <CardTitle className="text-sm text-white">{product.name}</CardTitle>
             <CardDescription className="text-sm text-slate-300">
-              R1000
+              Starting from R{lowestPrice.toFixed(2)}
             </CardDescription>
           </div>
         </CardContent>

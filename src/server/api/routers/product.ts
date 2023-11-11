@@ -54,31 +54,31 @@ export const productRouter = createTRPCRouter({
 
     try {
       await ctx.db.product.create({
-        data: {
-          name,
-          description,
-          store: {
-            connect: {
-              id: store.id,
-            },
-          },
-          price: {
-            create: productQuantitySizeAndPriceArray.map((item) => ({
-              size: {
-                create: {
-                  quantity: item.quantity ?? 0,
-                  size: item.size,
-                 
-                },
-              },
-            })),
-          },
-          images: {
-            create: {
-              key: image_key,
-            },
+       data: {
+        store: {
+          connect: {
+            id: store.id
+          }
+        },
+        name,
+        description,
+        priceAndsize: {
+          createMany: {
+            data: productQuantitySizeAndPriceArray.map((item) => {
+              return{
+                price: item.price ?? 0,
+                size:item.size,
+                quantity: item.quantity ?? 0,
+              }
+            }),
           },
         },
+        images: {
+          create: {
+            key:image_key,
+          }
+        },
+       },
       });
     } catch (error) {
       console.log(error);
@@ -91,24 +91,25 @@ export const productRouter = createTRPCRouter({
 
 
   getAllProducts: protectedProcedure.query( async ({ ctx }) => {
-    const products = await ctx.db.product.findMany(
-      {
-        include: {
-          price: {
-            include: {
-              size: {
-                select: {
-                  size: true,
-                  quantity: true,
-                  price: true,
-                }
-              }
+    console.log(ctx.userId);
+    const products = await ctx.db.product.findMany({
+      include: {
+        priceAndsize: {
+            select: {
+              id: true,
+                size: true,
+                price: true,
+                quantity: true,
             }
-          },
-          images: true
-        }
-      }
-    )
+        },
+        images: {
+            select: {
+                id: true,
+                key: true,
+            }
+        },  
+      } 
+    })
     console.log(products);
 
     return products;

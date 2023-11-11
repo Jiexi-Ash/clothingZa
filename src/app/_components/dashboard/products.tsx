@@ -37,12 +37,7 @@ const ProductCard = async ({ product }: { product: ProductGetAll[number] }) => {
     <Card className="h-full rounded-lg border bg-gray-200">
       <CardContent className="items-center p-0 py-6">
         <AspectRatio ratio={4 / 3}>
-          <Image
-            src={url}
-            fill
-            className="object-contain"
-            alt={product.name as string}
-          />
+          <Image src={url} fill className="object-contain" alt={product.name} />
         </AspectRatio>
       </CardContent>
       <CardFooter>

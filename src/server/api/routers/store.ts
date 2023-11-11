@@ -110,18 +110,19 @@ export const storeRouter = createTRPCRouter({
             storeId: store.id
           },
           include: {
+            priceAndsize: {
+                select: {
+                    size: true,
+                    price: true,
+                    quantity: true,
+                }
+            },
             images: {
                 select: {
                     id: true,
                     key: true,
                 }
-            },
-            price: {
-                select: {
-                    size: true,
-                    
-                }
-            },   
+            },  
           }   
         });
     

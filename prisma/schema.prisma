@@ -40,10 +40,10 @@ model product {
     images       images[]
     storeId      String
     store        store          @relation(fields: [storeId], references: [id])
-    priceAndSize priceAndSize[]
+    priceAndsize priceAndsize[]
 }
 
-model priceAndSize {
+model priceAndsize {
     id        Int     @id @default(autoincrement())
     price     Float
     size      String
