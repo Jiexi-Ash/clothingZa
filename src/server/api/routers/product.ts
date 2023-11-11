@@ -115,4 +115,41 @@ export const productRouter = createTRPCRouter({
     return products;
   }),
 
+  getProduct: protectedProcedure.input(z.object({ id: z.number() })).query(async ({ ctx, input }) => {
+    const { id } = input;
+
+    if (!id) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error getting product",
+      });
+    }
+
+    const product = await ctx.db.product.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        images: {
+          select: {
+            id: true,
+            key: true,
+          }
+        },
+        priceAndsize: {
+          select: {
+            id: true,
+            size: true,
+            price: true,
+            quantity: true,
+          }
+        },
+      },
+    });
+
+    if (!product) return null;
+
+    return product;
+  }),
+
 });
