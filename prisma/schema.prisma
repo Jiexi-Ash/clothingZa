@@ -48,6 +48,7 @@ model priceAndSize {
     price     Float
     size      String
     productId Int
+    quantity  Int
     product   product @relation(fields: [productId], references: [id])
 }
 
