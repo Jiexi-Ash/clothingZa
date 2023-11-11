@@ -24,12 +24,15 @@ async function DashboardProducts() {
   );
 }
 
+// get the lowest price
+
 export default DashboardProducts;
 
 const ProductCard = async ({ product }: { product: ProductGetAll[number] }) => {
   const url = product.images[0]?.key
     ? await api.store.getS3Url.query({ file_key: product.images[0]?.key })
     : "";
+
   return (
     <Card className="h-full rounded-lg border bg-gray-200">
       <CardContent className="items-center p-0 py-6">

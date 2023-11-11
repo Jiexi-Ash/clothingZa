@@ -16,6 +16,10 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        "darkbg" : "url('/images/background.jpg')",
+        "hero-pattern": "url('/images/tech-bg.jpg')",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },
