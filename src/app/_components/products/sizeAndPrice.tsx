@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { api } from "@/trpc/react";
+import { useToast } from "../ui/use-toast";
 
 type priceAndsize = {
   id: number;
@@ -106,14 +107,20 @@ const AddToCartBtn = ({
   productId,
   size,
 }: AddToCartBtnProps) => {
+  const { toast } = useToast();
   const [maxQuantity] = useState<number>(producQuantity ?? 0);
   const [quantity, setQuantity] = useState<number>(1);
   const { mutate: addToCart } = api.cart.addToCart.useMutation({
     onSuccess: () => {
-      console.log("added to cart");
+      toast({
+        title: "Item added to cart",
+      });
     },
     onError: (err) => {
-      console.log(err);
+      toast({
+        variant: "destructive",
+        title: err.message,
+      });
     },
   });
 
