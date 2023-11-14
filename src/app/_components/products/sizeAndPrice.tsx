@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { api } from "@/trpc/react";
+
 type priceAndsize = {
   id: number;
   price: number;
@@ -11,6 +13,7 @@ type priceAndsize = {
 
 interface Props {
   productSizeAndPrice: priceAndsize[];
+  productId: number;
 }
 
 const getSizeInInitials = (size: string) => {
@@ -34,15 +37,17 @@ const getPrice = (size: string, priceAndsize: priceAndsize[]) => {
   const price = priceAndsize.find((item) => item.size === size)?.price;
   return price;
 };
-function SizeAndPrice({ productSizeAndPrice }: Props) {
+
+function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
   const [selectedSize, setSelectedSize] = useState<string>("");
-  console.log(productSizeAndPrice);
 
   const handleSelectSize = (size: string) => {
     setSelectedSize((prev) => (prev === size ? "" : size));
   };
 
-  //   update the url with the selected size
+  const currentProductQuantity = productSizeAndPrice.find(
+    (item) => item.size === selectedSize,
+  )?.quantity;
 
   return (
     <div className="flex flex-col space-y-4">
@@ -77,36 +82,86 @@ function SizeAndPrice({ productSizeAndPrice }: Props) {
           )}
         </div>
       </div>
-      {selectedSize && <AddToCartBtn />}
+      {selectedSize && (
+        <AddToCartBtn
+          producQuantity={currentProductQuantity}
+          productId={productId}
+          size={selectedSize}
+        />
+      )}
     </div>
   );
 }
 
 export default SizeAndPrice;
 
-const AddToCartBtn = () => {
+interface AddToCartBtnProps {
+  producQuantity: number | undefined;
+  productId: number;
+  size: string;
+}
+
+const AddToCartBtn = ({
+  producQuantity,
+  productId,
+  size,
+}: AddToCartBtnProps) => {
+  const [maxQuantity] = useState<number>(producQuantity ?? 0);
+  const [quantity, setQuantity] = useState<number>(1);
+  const { mutate: addToCart } = api.cart.addToCart.useMutation({
+    onSuccess: () => {
+      console.log("added to cart");
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  if (producQuantity === 0) {
+    return (
+      <Button
+        disabled
+        className="bg-white text-black transition-all duration-100 ease-in-out hover:bg-white/70"
+      >
+        Out of stock
+      </Button>
+    );
+  }
+
+  const handleIncreaseQuantity = () => {
+    setQuantity((prev) => (prev === maxQuantity ? prev : prev + 1));
+  };
+
+  const handleDecreaseQuantity = () => {
+    setQuantity((prev) => (prev === 1 ? prev : prev - 1));
+  };
   return (
     <div className="flex w-full space-x-3">
       <div className="flex">
         <Button
           variant="outline"
           className="border-slate-400 bg-transparent  text-white"
+          onClick={handleDecreaseQuantity}
         >
           -
         </Button>
         <Input
           className="w-[80px] border-none bg-transparent text-center text-white"
           disabled
-          value={1}
+          value={quantity}
         />
         <Button
           variant="outline"
           className="border-slate-400 bg-transparent  text-white"
+          onClick={handleIncreaseQuantity}
         >
           +
         </Button>
       </div>
-      <Button className="bg-white text-black transition-all duration-100 ease-in-out hover:bg-white/70">
+      <Button
+        className="bg-white text-black transition-all duration-100 ease-in-out hover:bg-white/70"
+        onClick={() => addToCart({ productId, size, quantity })}
+      >
         Add to cart
       </Button>
     </div>

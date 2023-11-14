@@ -55,7 +55,10 @@ async function ProductPage({ params }: Props) {
               <h1 className="text-3xl font-bold text-white">
                 {productData?.name}
               </h1>
-              <SizeAndPrice productSizeAndPrice={productData?.priceAndsize} />
+              <SizeAndPrice
+                productSizeAndPrice={productData?.priceAndsize}
+                productId={productData.id}
+              />
             </div>
             {/* <AddToCartBtn productId={productData.id} productQuantity={0} /> */}
             <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
