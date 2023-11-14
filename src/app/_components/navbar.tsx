@@ -6,6 +6,7 @@ import NavMenu from "./nav-menu";
 import Link from "next/link";
 import { Input } from "./ui/input";
 import Account from "./account";
+import UserCart from "./cart";
 
 async function Navbar() {
   const cookieStore = cookies();
@@ -47,6 +48,7 @@ async function Navbar() {
           />
         </div>
         <Account />
+        <UserCart />
         {/* <Cart /> */}
       </div>
     </header>
