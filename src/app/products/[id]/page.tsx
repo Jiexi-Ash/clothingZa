@@ -50,24 +50,24 @@ async function ProductPage({ params }: Props) {
           </div>
         </div>
         <div className="h-full w-full flex-1">
-          <div className="flex flex-col space-y-6"></div>
-          <div className="flex flex-col space-y-3">
-            <h1 className="text-3xl font-bold text-white">
-              {productData?.name}
-            </h1>
-            <SizeAndPrice productSizeAndPrice={productData?.priceAndsize} />
+          <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-3">
+              <h1 className="text-3xl font-bold text-white">
+                {productData?.name}
+              </h1>
+              <SizeAndPrice productSizeAndPrice={productData?.priceAndsize} />
+            </div>
+            {/* <AddToCartBtn productId={productData.id} productQuantity={0} /> */}
+            <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="Description" className="text-white">
+                <AccordionTrigger className="text-white">
+                  Description
+                </AccordionTrigger>
+                <AccordionContent>{productData?.description}</AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
-          <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
-          {/* button */}
-          <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="Description" className="text-white">
-              <AccordionTrigger className="text-white">
-                Description
-              </AccordionTrigger>
-              <AccordionContent>{productData?.description}</AccordionContent>
-            </AccordionItem>
-          </Accordion>
         </div>
       </div>
     </div>
