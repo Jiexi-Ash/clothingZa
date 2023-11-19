@@ -39,15 +39,20 @@ const getPrice = (size: string, priceAndsize: priceAndsize[]) => {
   return price;
 };
 
-function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
-  const [selectedSize, setSelectedSize] = useState<string>("");
+type Size = {
+  id: number;
+  size: string;
+};
 
-  const handleSelectSize = (size: string) => {
-    setSelectedSize((prev) => (prev === size ? "" : size));
+function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
+  const [selectedSize, setSelectedSize] = useState<Size>();
+
+  const handleSelectSize = (size: string, id: number) => {
+    setSelectedSize((prev) => ({ ...prev, size: size, id: id }));
   };
 
   const currentProductQuantity = productSizeAndPrice.find(
-    (item) => item.size === selectedSize,
+    (item) => item.size === selectedSize?.size,
   )?.quantity;
 
   return (
@@ -58,14 +63,14 @@ function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
           {productSizeAndPrice.map((item) => (
             <Button
               className={`h-[30px] w-[30px] border border-gray-400 bg-transparent p-2 text-xs text-gray-400 ${
-                selectedSize === item.size
+                selectedSize?.size === item.size
                   ? "border-[#72FFFF] text-[#72FFFF]"
                   : ""
               }`}
               key={item.id}
               variant="secondary"
               size="icon"
-              onClick={() => handleSelectSize(item.size)}
+              onClick={() => handleSelectSize(item.size, item.id)}
             >
               {getSizeInInitials(item.size)}
             </Button>
@@ -76,7 +81,7 @@ function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
 
           {selectedSize ? (
             <p className="text-sm font-medium text-white">
-              R{getPrice(selectedSize, productSizeAndPrice)?.toFixed(2)}
+              R{getPrice(selectedSize.size, productSizeAndPrice)?.toFixed(2)}
             </p>
           ) : (
             <p className="text-sm text-red-500">Select size to view price</p>
@@ -87,7 +92,7 @@ function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
         <AddToCartBtn
           producQuantity={currentProductQuantity}
           productId={productId}
-          size={selectedSize}
+          sizeId={selectedSize.id}
         />
       )}
     </div>
@@ -99,13 +104,13 @@ export default SizeAndPrice;
 interface AddToCartBtnProps {
   producQuantity: number | undefined;
   productId: number;
-  size: string;
+  sizeId: number;
 }
 
 const AddToCartBtn = ({
   producQuantity,
   productId,
-  size,
+  sizeId,
 }: AddToCartBtnProps) => {
   const { toast } = useToast();
   const [maxQuantity] = useState<number>(producQuantity ?? 0);
@@ -167,7 +172,7 @@ const AddToCartBtn = ({
       </div>
       <Button
         className="bg-white text-black transition-all duration-100 ease-in-out hover:bg-white/70"
-        onClick={() => addToCart({ productId, size, quantity })}
+        onClick={() => addToCart({ productId, size: sizeId, quantity })}
       >
         Add to cart
       </Button>

@@ -115,7 +115,7 @@ export const productRouter = createTRPCRouter({
     return products;
   }),
 
-  getProduct: protectedProcedure.input(z.object({ id: z.number() })).query(async ({ ctx, input }) => {
+  getProduct: publicProcedure.input(z.object({ id: z.number() })).query(async ({ ctx, input }) => {
     const { id } = input;
 
     if (!id) {

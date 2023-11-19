@@ -17,7 +17,7 @@ model user {
     updatedAt DateTime @default(now()) @updatedAt
     role      Role     @default(USER)
     store     store[]
-    Cart      Cart[]
+    Cart      cart[]
 
     @@index([email])
 }
@@ -42,16 +42,16 @@ model product {
     storeId      String
     store        store          @relation(fields: [storeId], references: [id])
     priceAndsize priceAndsize[]
-    CartItem     CartItem[]
 }
 
 model priceAndsize {
-    id        Int     @id @default(autoincrement())
+    id        Int        @id @default(autoincrement())
     price     Float
     size      String
     productId Int
     quantity  Int
-    product   product @relation(fields: [productId], references: [id])
+    product   product    @relation(fields: [productId], references: [id])
+    CartItem  CartItem[]
 }
 
 model images {
@@ -61,25 +61,24 @@ model images {
     product   product @relation(fields: [productId], references: [id])
 }
 
-model Cart {
+model cart {
     id        String     @id @default(uuid())
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
-    items     CartItem[]
     user      user       @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId    String
+    items     CartItem[]
 }
 
 model CartItem {
-    id        String   @id @default(uuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    quantity  Int
-    cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-    cartId    String
-    product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-    size      String
-    productId Int
+    id             String       @id @default(uuid())
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
+    quantity       Int
+    cartId         String
+    cart           cart         @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    priceAndsizeId Int
+    priceAndsize   priceAndsize @relation(fields: [priceAndsizeId], references: [id])
 }
 
 enum Role {

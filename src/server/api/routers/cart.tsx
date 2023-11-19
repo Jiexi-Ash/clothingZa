@@ -11,12 +11,13 @@ export const cartRouter = createTRPCRouter({
     .input(
       z.object({
         productId: z.number(),
-        size: z.string(),
+        size: z.number(),
         quantity: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.userId;
+      console.log(userId);
 
       // if user is logged in get cart from db
       if (userId) {
@@ -27,24 +28,7 @@ export const cartRouter = createTRPCRouter({
           include: {
             items: {
               include: {
-                product: {
-                  include: {
-                    images: {
-                      select: {
-                        id: true,
-                        key: true,
-                      },
-                    },
-                    priceAndsize: {
-                      select: {
-                        id: true,
-                        price: true,
-                        size: true,
-                        quantity: true,
-                      },
-                    },
-                  },
-                },
+                priceAndsize: true,
               },
             },
           },
@@ -53,7 +37,8 @@ export const cartRouter = createTRPCRouter({
         if (cart) {
           const cartItem = cart.items.find(
             (item) =>
-              item.productId === input.productId && item.size === input.size,
+              item.priceAndsize.productId === input.productId &&
+              item.priceAndsize.id === input.size,
           );
 
           if (cartItem) {
@@ -76,30 +61,45 @@ export const cartRouter = createTRPCRouter({
               },
             });
           } else {
-            await ctx.db.cart.update({
+            const size = await ctx.db.priceAndsize.findUnique({
               where: {
-                id: cart.id,
-              },
-              data: {
-                items: {
-                  create: {
-                    productId: input.productId,
-                    size: input.size,
-                    quantity: input.quantity,
-                  },
-                },
+                id: input.size,
               },
             });
+
+            if (size) {
+              await ctx.db.cart.update({
+                where: {
+                  id: cart.id,
+                },
+                data: {
+                  items: {
+                    create: {
+                      priceAndsizeId: size.id,
+                      quantity: input.quantity,
+                    },
+                  },
+                },
+              });
+            }
           }
         } else {
           try {
+            const productDetails = await ctx.db.priceAndsize.findUnique({
+              where: {
+                id: input.size,
+              },
+            });
+            if (!productDetails) {
+              throw new Error("Product not found");
+            }
+
             await ctx.db.cart.create({
               data: {
                 userId: userId,
                 items: {
                   create: {
-                    productId: input.productId,
-                    size: input.size,
+                    priceAndsizeId: productDetails?.id,
                     quantity: input.quantity,
                   },
                 },
@@ -110,5 +110,38 @@ export const cartRouter = createTRPCRouter({
           }
         }
       }
+
+      //TODO: if user is not logged in get cart from cookie
     }),
+
+  getUserCart: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user?.id;
+    console.log(userId);
+
+    if (userId) {
+      const cart = await ctx.db.cart.findFirst({
+        where: {
+          userId: userId,
+        },
+        include: {
+          items: {
+            include: {
+              priceAndsize: {
+                include: {
+                  product: {
+                    include: {
+                      images: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      return cart;
+    }
+
+    //TODO: if user is not logged in get cart from cookie
+  }),
 });
