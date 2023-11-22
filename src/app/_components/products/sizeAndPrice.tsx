@@ -115,8 +115,11 @@ const AddToCartBtn = ({
   const { toast } = useToast();
   const [maxQuantity] = useState<number>(producQuantity ?? 0);
   const [quantity, setQuantity] = useState<number>(1);
+  const utils = api.useContext();
   const { mutate: addToCart } = api.cart.addToCart.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.cart.getUserCart.invalidate();
+
       toast({
         title: "Item added to cart",
       });
@@ -139,6 +142,10 @@ const AddToCartBtn = ({
       </Button>
     );
   }
+
+  const handleAddToCart = () => {
+    addToCart({ productId, size: sizeId, quantity });
+  };
 
   const handleIncreaseQuantity = () => {
     setQuantity((prev) => (prev === maxQuantity ? prev : prev + 1));
@@ -172,7 +179,7 @@ const AddToCartBtn = ({
       </div>
       <Button
         className="bg-white text-black transition-all duration-100 ease-in-out hover:bg-white/70"
-        onClick={() => addToCart({ productId, size: sizeId, quantity })}
+        onClick={handleAddToCart}
       >
         Add to cart
       </Button>

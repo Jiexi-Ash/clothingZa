@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Sheet,
@@ -10,20 +11,19 @@ import {
 import { Button } from "./ui/button";
 import { ShoppingBagIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { api } from "@/trpc/server";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import CartItem from "./cart/cart-item";
 import Link from "next/link";
+import { api } from "@/trpc/react";
 
-async function UserCart() {
-  const cart = await api.cart.getUserCart.query();
-  if (!cart) return null;
+function UserCart() {
+  const { data } = api.cart.getUserCart.useQuery();
 
-  const itemsLength = cart?.items.length ?? 0;
+  const itemsLength = data?.items.length ?? 0;
   console.log(itemsLength);
 
-  const subTotal = cart?.items.reduce((acc, item) => {
+  const subTotal = data?.items.reduce((acc, item) => {
     return acc + item.priceAndsize.price;
   }, 0);
 
@@ -34,13 +34,13 @@ async function UserCart() {
           // className="relative flex h-8  w-8 items-center justify-center rounded-lg  border border-white/50"
 
           className={`relative flex h-8  w-8 items-center justify-center rounded-lg  border border-white/50 ${
-            cart ? "bg-[#72FFFF]/50" : "bg-transparent"
+            data ? "bg-[#72FFFF]/50" : "bg-transparent"
           }`}
           variant="ghost"
           size="icon"
         >
           <Badge className="absolute -top-2 left-3 flex h-4 w-4 items-center justify-center rounded-full bg-black p-0 text-[10px] text-white lg:left-4">
-            {itemsLength}
+            {data?.items.length}
           </Badge>
           <ShoppingBagIcon className="h-5 w-5 text-white" />
         </Button>
@@ -59,7 +59,7 @@ async function UserCart() {
         <div className="flex flex-1 flex-col overflow-hidden">
           <ScrollArea className="h-full">
             <div className="flex flex-col space-y-4">
-              {cart?.items.map((item) => (
+              {data?.items.map((item) => (
                 <CartItem
                   id={item.priceAndsize.product.id}
                   name={item.priceAndsize.product.name}
@@ -81,7 +81,7 @@ async function UserCart() {
             <div className="flex w-full items-center justify-between">
               <p className="text-sm font-bold text-white">Subtotal</p>
               <p className="text-sm font-bold text-white">
-                R{subTotal.toFixed(2)}
+                R{subTotal?.toFixed(2)}
               </p>
             </div>
             <Separator className="my-2" />
@@ -94,7 +94,7 @@ async function UserCart() {
                 </p>
               </div>
               <p className="text-sm font-bold text-white">
-                R{subTotal.toFixed(2)}
+                R{subTotal?.toFixed(2)}
               </p>
             </div>
             <Link
