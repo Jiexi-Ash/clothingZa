@@ -69,6 +69,8 @@ function UserCart() {
                   price={item.priceAndsize.price}
                   size={item.priceAndsize.size}
                   key={item.id}
+                  productQuantity={item.priceAndsize.quantity}
+                  userQuantity={item.quantity}
                 />
               ))}
             </div>

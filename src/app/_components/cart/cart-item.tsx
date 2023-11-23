@@ -2,7 +2,6 @@
 import type { images } from "@prisma/client";
 import Image from "next/image";
 import React from "react";
-import CartActions from "./cart-actions";
 import { api } from "@/trpc/react";
 import { Button } from "../ui/button";
 import { MinusCircle, PlusCircle } from "lucide-react";
@@ -15,20 +14,46 @@ interface CartItemProps {
   name: string;
   size: string;
   itemId: string;
+  userQuantity: number;
+  productQuantity: number;
 }
 
-function CartItem({ id, images, price, name, size, itemId }: CartItemProps) {
+function CartItem({
+  id,
+  images,
+  price,
+  name,
+  size,
+  itemId,
+  productQuantity,
+  userQuantity,
+}: CartItemProps) {
   const utils = api.useContext();
-  const { mutate: removeItem } = api.cart.removeItemFromCart.useMutation({
-    onSuccess: async () => {
-      await utils.cart.getUserCart.invalidate();
-      console.log("removed item from cart");
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+
+  const { mutate: removeItem, isLoading } =
+    api.cart.removeItemFromCart.useMutation({
+      onSuccess: async () => {
+        await utils.cart.getUserCart.invalidate();
+        console.log("removed item from cart");
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+
+  const { mutate: increaseItemQuantity } =
+    api.cart.increaseItemQuantity.useMutation({
+      onSuccess: async () => {
+        await utils.cart.getUserCart.invalidate();
+        console.log("increased item quantity");
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
+
   let url;
+
   const { data } = api.store.getS3Url.useQuery({
     file_key: images[0]?.key ? images[0]?.key : "",
   });
@@ -37,9 +62,19 @@ function CartItem({ id, images, price, name, size, itemId }: CartItemProps) {
     url = data;
   }
 
-  //   const url = images[0]?.key
-  //     ? api.store.getS3Url.query({ file_key: images[0]?.key })
-  //     : "";
+  const handleIncreaseQuantity = () => {
+    if (userQuantity + 1 > productQuantity) {
+      return;
+    }
+    increaseItemQuantity({ itemId });
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (userQuantity === 1) {
+      return;
+    }
+    increaseItemQuantity({ itemId });
+  };
 
   return (
     <div className="flex items-center space-x-3">
@@ -66,12 +101,14 @@ function CartItem({ id, images, price, name, size, itemId }: CartItemProps) {
               className="h-8 w-8 border-white/80 bg-transparent text-white"
               variant="outline"
               size="icon"
+              disabled={isLoading}
+              onClick={handleDecreaseQuantity}
             >
               <MinusCircle className="h-3 w-3" />
             </Button>
             <Input
               type="number"
-              value={1}
+              value={userQuantity}
               disabled
               className="focus:visible:ring-0 h-[30px] w-[60px] text-center text-[12px] text-black focus:outline-none focus:ring-0"
               readOnly
@@ -80,6 +117,8 @@ function CartItem({ id, images, price, name, size, itemId }: CartItemProps) {
               className="h-8 w-8 border-white/80 bg-transparent text-white"
               variant="outline"
               size="icon"
+              disabled={isLoading}
+              onClick={handleIncreaseQuantity}
             >
               <PlusCircle className="h-3 w-3" />
             </Button>

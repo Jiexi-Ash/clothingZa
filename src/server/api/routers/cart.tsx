@@ -183,4 +183,94 @@ export const cartRouter = createTRPCRouter({
         });
       }
     }),
+
+  increaseItemQuantity: publicProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
+
+      if (userId) {
+        const cart = await ctx.db.cart.findFirst({
+          where: {
+            userId: userId,
+          },
+        });
+
+        if (!cart) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cart not found",
+          });
+        }
+
+        await ctx.db.cart.update({
+          where: {
+            id: cart.id,
+          },
+          data: {
+            items: {
+              update: {
+                where: {
+                  id: input.itemId,
+                },
+                data: {
+                  quantity: {
+                    increment: 1,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    }),
+
+  decreaseItemQuantity: publicProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
+
+      if (userId) {
+        const cart = await ctx.db.cart.findFirst({
+          where: {
+            userId: userId,
+          },
+        });
+
+        if (!cart) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cart not found",
+          });
+        }
+
+        await ctx.db.cart.update({
+          where: {
+            id: cart.id,
+          },
+          data: {
+            items: {
+              update: {
+                where: {
+                  id: input.itemId,
+                },
+                data: {
+                  quantity: {
+                    decrement: 1,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    }),
 });
