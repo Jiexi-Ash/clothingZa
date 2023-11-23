@@ -112,6 +112,7 @@ const AddToCartBtn = ({
   productId,
   sizeId,
 }: AddToCartBtnProps) => {
+  console.log(producQuantity);
   const { toast } = useToast();
   const [maxQuantity] = useState<number>(producQuantity ?? 0);
   const [quantity, setQuantity] = useState<number>(1);
@@ -148,11 +149,17 @@ const AddToCartBtn = ({
   };
 
   const handleIncreaseQuantity = () => {
-    setQuantity((prev) => (prev === maxQuantity ? prev : prev + 1));
+    if (quantity === maxQuantity) {
+      return;
+    }
+    setQuantity((prev) => prev + 1);
   };
 
   const handleDecreaseQuantity = () => {
-    setQuantity((prev) => (prev === 1 ? prev : prev - 1));
+    if (quantity === 1) {
+      return;
+    }
+    setQuantity((prev) => prev - 1);
   };
   return (
     <div className="flex w-full space-x-3">
