@@ -28,27 +28,41 @@ function CartItem({
   productQuantity,
   userQuantity,
 }: CartItemProps) {
+  const [isLoading, setIsLoading] = React.useState(false);
   const utils = api.useContext();
 
-  const { mutate: removeItem, isLoading } =
-    api.cart.removeItemFromCart.useMutation({
-      onSuccess: async () => {
-        await utils.cart.getUserCart.invalidate();
-        console.log("removed item from cart");
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    });
+  const { mutate: removeItem } = api.cart.removeItemFromCart.useMutation({
+    onSuccess: async () => {
+      await utils.cart.getUserCart.invalidate();
+      setIsLoading(false);
+    },
+    onError: (error) => {
+      console.log(error);
+      setIsLoading(false);
+    },
+  });
 
   const { mutate: increaseItemQuantity } =
     api.cart.increaseItemQuantity.useMutation({
       onSuccess: async () => {
         await utils.cart.getUserCart.invalidate();
-        console.log("increased item quantity");
+        setIsLoading(false);
       },
       onError: (error) => {
         console.log(error);
+        setIsLoading(false);
+      },
+    });
+
+  const { mutate: decreaseItemQuantity } =
+    api.cart.decreaseItemQuantity.useMutation({
+      onSuccess: async () => {
+        await utils.cart.getUserCart.invalidate();
+        setIsLoading(false);
+      },
+      onError: (error) => {
+        console.log(error);
+        setIsLoading(false);
       },
     });
 
@@ -63,6 +77,7 @@ function CartItem({
   }
 
   const handleIncreaseQuantity = () => {
+    setIsLoading(true);
     if (userQuantity + 1 > productQuantity) {
       return;
     }
@@ -73,7 +88,12 @@ function CartItem({
     if (userQuantity === 1) {
       return;
     }
-    increaseItemQuantity({ itemId });
+    decreaseItemQuantity({ itemId });
+  };
+
+  const handleRemoveItem = () => {
+    setIsLoading(true);
+    removeItem({ itemId });
   };
 
   return (
@@ -98,7 +118,9 @@ function CartItem({
         <div className="flex flex-col space-y-2">
           <div className="flex space-x-2">
             <Button
-              className="h-8 w-8 border-white/80 bg-transparent text-white"
+              className={`h-8 w-8 border-white/80 bg-transparent text-white ${
+                isLoading ? "cursor-not-allowed" : ""
+              }`}
               variant="outline"
               size="icon"
               disabled={isLoading}
@@ -114,7 +136,9 @@ function CartItem({
               readOnly
             />
             <Button
-              className="h-8 w-8 border-white/80 bg-transparent text-white"
+              className={`h-8 w-8 border-white/80 bg-transparent text-white ${
+                isLoading ? "cursor-not-allowed" : ""
+              }`}
               variant="outline"
               size="icon"
               disabled={isLoading}
@@ -125,7 +149,7 @@ function CartItem({
           </div>
           <button
             className="h-w-full text-left text-[10px] text-white hover:underline"
-            onClick={() => removeItem({ itemId })}
+            onClick={handleRemoveItem}
           >
             remove from cart
           </button>

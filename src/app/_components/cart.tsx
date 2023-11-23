@@ -25,7 +25,7 @@ function UserCart() {
   console.log(itemsLength);
 
   const subTotal = data?.items.reduce((acc, item) => {
-    return acc + item.priceAndsize.price;
+    return acc + item.priceAndsize.price * item.quantity;
   }, 0);
 
   return (
