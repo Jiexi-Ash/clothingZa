@@ -5,6 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "@/server/api/trpc";
+import { TRPCError } from "@trpc/server";
 
 export const cartRouter = createTRPCRouter({
   addToCart: protectedProcedure
@@ -144,4 +145,42 @@ export const cartRouter = createTRPCRouter({
 
     //TODO: if user is not logged in get cart from cookie
   }),
+
+  removeItemFromCart: publicProcedure
+    .input(
+      z.object({
+        itemId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user?.id;
+
+      if (userId) {
+        const cart = await ctx.db.cart.findFirst({
+          where: {
+            userId: userId,
+          },
+        });
+
+        if (!cart) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cart not found",
+          });
+        }
+
+        await ctx.db.cart.update({
+          where: {
+            id: cart.id,
+          },
+          data: {
+            items: {
+              delete: {
+                id: input.itemId,
+              },
+            },
+          },
+        });
+      }
+    }),
 });

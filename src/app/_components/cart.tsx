@@ -19,6 +19,7 @@ import { api } from "@/trpc/react";
 
 function UserCart() {
   const { data } = api.cart.getUserCart.useQuery();
+  console.log(data);
 
   const itemsLength = data?.items.length ?? 0;
   console.log(itemsLength);
@@ -61,6 +62,7 @@ function UserCart() {
             <div className="flex flex-col space-y-4">
               {data?.items.map((item) => (
                 <CartItem
+                  itemId={item.id}
                   id={item.priceAndsize.product.id}
                   name={item.priceAndsize.product.name}
                   images={item.priceAndsize.product.images}
