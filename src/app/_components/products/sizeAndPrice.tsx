@@ -42,18 +42,20 @@ const getPrice = (size: string, priceAndsize: priceAndsize[]) => {
 type Size = {
   id: number;
   size: string;
+  quantity: number;
 };
 
 function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
   const [selectedSize, setSelectedSize] = useState<Size>();
 
-  const handleSelectSize = (size: string, id: number) => {
-    setSelectedSize((prev) => ({ ...prev, size: size, id: id }));
+  const handleSelectSize = (size: string, id: number, quantity: number) => {
+    setSelectedSize((prev) => ({
+      ...prev,
+      size: size,
+      id: id,
+      quantity: quantity,
+    }));
   };
-
-  const currentProductQuantity = productSizeAndPrice.find(
-    (item) => item.size === selectedSize?.size,
-  )?.quantity;
 
   return (
     <div className="flex flex-col space-y-4">
@@ -70,7 +72,9 @@ function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
               key={item.id}
               variant="secondary"
               size="icon"
-              onClick={() => handleSelectSize(item.size, item.id)}
+              onClick={() =>
+                handleSelectSize(item.size, item.id, item.quantity)
+              }
             >
               {getSizeInInitials(item.size)}
             </Button>
@@ -90,7 +94,7 @@ function SizeAndPrice({ productSizeAndPrice, productId }: Props) {
       </div>
       {selectedSize && (
         <AddToCartBtn
-          producQuantity={currentProductQuantity}
+          producQuantity={selectedSize.quantity}
           productId={productId}
           sizeId={selectedSize.id}
         />
@@ -112,7 +116,6 @@ const AddToCartBtn = ({
   productId,
   sizeId,
 }: AddToCartBtnProps) => {
-  console.log(producQuantity);
   const { toast } = useToast();
   const [maxQuantity] = useState<number>(producQuantity ?? 0);
   const [quantity, setQuantity] = useState<number>(1);
