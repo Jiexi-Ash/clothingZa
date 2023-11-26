@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Input } from "./ui/input";
 import Account from "./account";
 import UserCart from "./cart";
+import MobileNav from "./mobile-nav";
 
 async function Navbar() {
   const cookieStore = cookies();
@@ -28,7 +29,7 @@ async function Navbar() {
   return (
     <header className="container relative z-30 mx-auto flex h-[80px] w-full items-center justify-between bg-transparent py-4">
       <NavMenu />
-      {/* <MobileNav /> */}
+      <MobileNav />
 
       <Link href="/" className="hidden lg:block">
         {/* <Image
