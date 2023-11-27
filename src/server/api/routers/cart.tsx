@@ -6,9 +6,10 @@ import {
   protectedProcedure,
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
 
 export const cartRouter = createTRPCRouter({
-  addToCart: protectedProcedure
+  addToCart: publicProcedure
     .input(
       z.object({
         productId: z.number(),
@@ -17,102 +18,153 @@ export const cartRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.userId;
+      const cookieStore = cookies();
+      const userId = ctx.user?.id;
       console.log(userId);
 
-      // if user is logged in get cart from db
-      if (userId) {
-        const cart = await ctx.db.cart.findFirst({
-          where: {
-            userId: userId,
-          },
-          include: {
-            items: {
-              include: {
-                priceAndsize: true,
+      const getCart = async () => {
+        if (userId) {
+          const cart = await ctx.db.cart.findFirst({
+            where: {
+              userId: userId,
+            },
+            include: {
+              items: {
+                include: {
+                  priceAndsize: true,
+                },
               },
             },
-          },
-        });
+          });
 
-        if (cart) {
-          const cartItem = cart.items.find(
-            (item) =>
-              item.priceAndsize.productId === input.productId &&
-              item.priceAndsize.id === input.size,
-          );
+          if (!cart) return null;
 
-          if (cartItem) {
-            cartItem.quantity += input.quantity;
+          return cart;
+        } else {
+          const cartId = cookieStore.get("cartId")?.value;
+
+          const cart = cartId
+            ? await ctx.db.cart.findUnique({
+                where: {
+                  id: cartId,
+                },
+                include: {
+                  items: {
+                    include: {
+                      priceAndsize: {
+                        include: {
+                          product: {
+                            include: {
+                              images: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              })
+            : null;
+
+          return cart;
+        }
+      };
+
+      const createCart = async () => {
+        if (userId) {
+          const cart = await ctx.db.cart.create({
+            data: {
+              userId: userId,
+            },
+
+            include: {
+              items: {
+                include: {
+                  priceAndsize: true,
+                },
+              },
+            },
+          });
+
+          return cart;
+        } else {
+          const cart = await ctx.db.cart.create({
+            data: {
+              userId: userId,
+            },
+
+            include: {
+              items: {
+                include: {
+                  priceAndsize: true,
+                },
+              },
+            },
+          });
+
+          cookieStore.set("cartId", cart.id);
+
+          return cart;
+        }
+      };
+
+      const cart = (await getCart()) ?? (await createCart());
+
+      if (cart) {
+        const cartItem = cart.items.find(
+          (item) =>
+            item.priceAndsize.productId === input.productId &&
+            item.priceAndsize.id === input.size,
+        );
+
+        if (cartItem) {
+          cartItem.quantity += input.quantity;
+          await ctx.db.cart.update({
+            where: {
+              id: cart.id,
+            },
+            data: {
+              items: {
+                update: {
+                  where: {
+                    id: cartItem.id,
+                  },
+                  data: {
+                    quantity: cartItem.quantity,
+                  },
+                },
+              },
+            },
+          });
+        } else {
+          const size = await ctx.db.priceAndsize.findUnique({
+            where: {
+              id: input.size,
+            },
+          });
+
+          if (size) {
             await ctx.db.cart.update({
               where: {
                 id: cart.id,
               },
               data: {
                 items: {
-                  update: {
-                    where: {
-                      id: cartItem.id,
-                    },
-                    data: {
-                      quantity: cartItem.quantity,
-                    },
-                  },
-                },
-              },
-            });
-          } else {
-            const size = await ctx.db.priceAndsize.findUnique({
-              where: {
-                id: input.size,
-              },
-            });
-
-            if (size) {
-              await ctx.db.cart.update({
-                where: {
-                  id: cart.id,
-                },
-                data: {
-                  items: {
-                    create: {
-                      priceAndsizeId: size.id,
-                      quantity: input.quantity,
-                    },
-                  },
-                },
-              });
-            }
-          }
-        } else {
-          try {
-            const productDetails = await ctx.db.priceAndsize.findUnique({
-              where: {
-                id: input.size,
-              },
-            });
-            if (!productDetails) {
-              throw new Error("Product not found");
-            }
-
-            await ctx.db.cart.create({
-              data: {
-                userId: userId,
-                items: {
                   create: {
-                    priceAndsizeId: productDetails?.id,
+                    priceAndsizeId: size.id,
                     quantity: input.quantity,
                   },
                 },
               },
             });
-          } catch (error) {
-            console.log(error);
           }
         }
+      } else {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Cart not found",
+        });
       }
-
-      //TODO: if user is not logged in get cart from cookie
     }),
 
   getUserCart: publicProcedure.query(async ({ ctx }) => {
