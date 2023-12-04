@@ -20,7 +20,6 @@ export const cartRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const cookieStore = cookies();
       const userId = ctx.user?.id;
-      console.log(userId);
 
       const getCart = async () => {
         if (userId) {
@@ -169,7 +168,6 @@ export const cartRouter = createTRPCRouter({
 
   getUserCart: publicProcedure.query(async ({ ctx }) => {
     const userId = ctx.user?.id;
-    console.log(userId);
 
     if (userId) {
       const cart = await ctx.db.cart.findFirst({
