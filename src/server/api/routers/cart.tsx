@@ -261,6 +261,42 @@ export const cartRouter = createTRPCRouter({
             },
           },
         });
+      } else {
+        const cookieStore = cookies();
+        const cartId = cookieStore.get("cartId")?.value;
+
+        if (!cartId) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "CarId not found",
+          });
+        }
+
+        const cart = await ctx.db.cart.findUnique({
+          where: {
+            id: cartId,
+          },
+        });
+
+        if (!cart) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cart not found",
+          });
+        }
+
+        await ctx.db.cart.update({
+          where: {
+            id: cart.id,
+          },
+          data: {
+            items: {
+              delete: {
+                id: input.itemId,
+              },
+            },
+          },
+        });
       }
     }),
 
