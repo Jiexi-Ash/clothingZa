@@ -165,7 +165,7 @@ const AddToCartBtn = ({
     setQuantity((prev) => prev - 1);
   };
   return (
-    <div className="flex w-full  flex-col space-y-3 lg:flex-row lg:space-x-3">
+    <div className="flex w-full  flex-col space-y-3 lg:flex-row lg:space-x-3 lg:space-y-0">
       <div className="flex">
         <Button
           variant="outline"
