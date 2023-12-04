@@ -193,6 +193,34 @@ export const cartRouter = createTRPCRouter({
         },
       });
       return cart;
+    } else {
+      const cookieStore = cookies();
+      const cartId = cookieStore.get("cartId")?.value;
+
+      if (cartId) {
+        const cart = await ctx.db.cart.findUnique({
+          where: {
+            id: cartId,
+          },
+          include: {
+            items: {
+              include: {
+                priceAndsize: {
+                  include: {
+                    product: {
+                      include: {
+                        images: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        return cart;
+      }
     }
 
     //TODO: if user is not logged in get cart from cookie
