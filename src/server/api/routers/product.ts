@@ -90,8 +90,7 @@ export const productRouter = createTRPCRouter({
   }),
 
 
-  getAllProducts: protectedProcedure.query( async ({ ctx }) => {
-    console.log(ctx.userId);
+  getAllProducts: publicProcedure.query( async ({ ctx }) => {
     const products = await ctx.db.product.findMany({
       include: {
         priceAndsize: {
