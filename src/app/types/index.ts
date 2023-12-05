@@ -1,3 +1,5 @@
+import { CartItem } from "@prisma/client";
+
 export type MainNav = {
     title: string;
     href: string;
@@ -16,3 +18,8 @@ export type AdminNav = {
     href: string;
     icon: string;
 }
+
+export type UserCart = {
+    id: string;
+    items: CartItem[];
+};

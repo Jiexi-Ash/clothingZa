@@ -7,6 +7,8 @@ import {
 } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
+import { cart } from "@prisma/client";
+import { UserCart } from "@/app/types";
 
 export const cartRouter = createTRPCRouter({
   addToCart: publicProcedure
@@ -473,4 +475,117 @@ export const cartRouter = createTRPCRouter({
         });
       }
     }),
+
+  mergeCartToUser: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.userId;
+    const cookieStore = cookies();
+    const cartId = cookieStore.get("cartId")?.value;
+
+    const mergeCartItems = (localCart: UserCart, userCart: UserCart) => {
+      const localCartItems = localCart.items;
+      const userCartItems = userCart.items;
+      console.log(localCartItems);
+      console.log(userCartItems);
+
+      localCartItems.forEach((localCartItem) => {
+        const userCartItem = userCartItems.find(
+          (item) => item.priceAndsizeId === localCartItem.priceAndsizeId,
+        );
+        if (userCartItem) {
+          userCartItem.quantity += localCartItem.quantity;
+        } else {
+          userCartItems.push(localCartItem);
+        }
+
+        console.log(userCartItems);
+        return userCartItems;
+      });
+
+      return userCartItems;
+    };
+
+    if (!userId) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "You are not logged in",
+      });
+    }
+
+    const localCart = await ctx.db.cart.findUnique({
+      where: {
+        id: cartId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!localCart) return;
+
+    const userCart = await ctx.db.cart.findFirst({
+      where: {
+        userId: userId,
+      },
+      include: {
+        items: true,
+      },
+    });
+
+    await ctx.db.$transaction(async (tx) => {
+      if (userCart) {
+        const mergedCart = mergeCartItems(localCart, userCart).map((item) => {
+          return {
+            priceAndsizeId: item.priceAndsizeId,
+            quantity: item.quantity,
+          };
+        });
+        console.log(mergedCart);
+        await tx.cartItem.deleteMany({
+          where: {
+            cartId: userCart.id,
+          },
+        });
+
+        await tx.cart.update({
+          where: {
+            id: userCart.id,
+          },
+          data: {
+            items: {
+              createMany: {
+                data: mergedCart.map((item) => {
+                  return {
+                    priceAndsizeId: item.priceAndsizeId,
+                    quantity: item.quantity,
+                  };
+                }),
+              },
+            },
+          },
+        });
+      } else {
+        await tx.cart.create({
+          data: {
+            userId: userId,
+            items: {
+              createMany: {
+                data: localCart.items.map((item) => {
+                  return {
+                    priceAndsizeId: item.priceAndsizeId,
+                    quantity: item.quantity,
+                  };
+                }),
+              },
+            },
+          },
+        });
+      }
+
+      await tx.cart.delete({
+        where: {
+          id: localCart.id,
+        },
+      });
+    });
+  }),
 });

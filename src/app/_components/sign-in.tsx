@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/app/_components/ui/use-toast";
 import { useState } from "react";
 import { Loader2Icon } from "lucide-react";
+import { api } from "@/trpc/react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -60,9 +61,20 @@ function SignIn() {
       return;
     }
 
-    router.push("/");
+    mergeCartToUser();
     setLoading(false);
   };
+
+  const { mutate: mergeCartToUser } = api.cart.mergeCartToUser.useMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+    onError: (error) => {
+      toast({
+        description: error.message,
+      });
+    },
+  });
 
   return (
     <Card className="w-full max-w-sm">
