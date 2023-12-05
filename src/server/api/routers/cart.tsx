@@ -481,6 +481,8 @@ export const cartRouter = createTRPCRouter({
     const cookieStore = cookies();
     const cartId = cookieStore.get("cartId")?.value;
 
+    if (!cartId) return;
+
     const mergeCartItems = (localCart: UserCart, userCart: UserCart) => {
       const localCartItems = localCart.items;
       const userCartItems = userCart.items;
