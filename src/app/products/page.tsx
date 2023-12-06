@@ -22,11 +22,11 @@ type getAllProducts = RouterOutput["product"]["getAllProducts"];
 
 async function ProductsPage() {
   const productsData = await api.product.getAllProducts.query();
-  console.log(productsData);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-darkbg bg-cover bg-no-repeat">
       <Navbar />
-      <div className="container mx-auto my-[60px] flex h-full w-full flex-col gap-10  ">
+      <div className="container relative mx-auto my-[60px] flex h-full w-full flex-col gap-10">
         <div className="grid w-full gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {productsData.map((product) => (
             <ProductCard key={product.id} product={product} />
