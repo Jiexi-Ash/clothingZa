@@ -37,9 +37,9 @@ async function ProductPage({ params }: Props) {
   return (
     <div className="flex min-h-screen w-full flex-col bg-darkbg bg-cover bg-no-repeat">
       <Navbar />
-      <div className="my-[60px] flex h-full w-full flex-col gap-10 px-20 lg:flex-row">
+      <div className="my-[60px] flex h-full w-full flex-col gap-10 px-10 lg:flex-row">
         <div className="h-full w-full flex-1">
-          <div className="relative h-[500px] w-full">
+          <div className="relative h-[400px] w-full">
             <Image
               src={url}
               fill
