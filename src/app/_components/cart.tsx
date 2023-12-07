@@ -47,7 +47,7 @@ function UserCart() {
         </Button>
       </SheetTrigger>
       <SheetContent
-        className="flex h-full w-full flex-col bg-slate-800 lg:w-[400px]"
+        className="flex h-full w-full flex-col bg-slate-800 md:w-[400px]"
         side="right"
       >
         <SheetHeader>

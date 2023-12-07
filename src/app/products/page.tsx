@@ -14,7 +14,6 @@ import {
 import { AspectRatio } from "../_components/ui/aspect-ratio";
 import Image from "next/image";
 import { Separator } from "../_components/ui/separator";
-import { Button } from "../_components/ui/button";
 import Navbar from "../_components/navbar";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
