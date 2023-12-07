@@ -19,10 +19,8 @@ import { api } from "@/trpc/react";
 
 function UserCart() {
   const { data } = api.cart.getUserCart.useQuery();
-  console.log(data);
 
   const itemsLength = data?.items.length ?? 0;
-  console.log(itemsLength);
 
   const subTotal = data?.items.reduce((acc, item) => {
     return acc + item.priceAndsize.price * item.quantity;
@@ -32,8 +30,6 @@ function UserCart() {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          // className="relative flex h-8  w-8 items-center justify-center rounded-lg  border border-white/50"
-
           className={`relative flex h-8  w-8 items-center justify-center rounded-lg  border border-white/50 ${
             data ? "bg-[#72FFFF]/50" : "bg-transparent"
           }`}
