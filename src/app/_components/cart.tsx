@@ -47,8 +47,10 @@ function UserCart() {
         side="right"
       >
         <SheetHeader>
-          <SheetTitle className="text-2xl text-white">My Cart</SheetTitle>
-          <SheetDescription className="text-white">
+          <SheetTitle className="text-left text-2xl text-white">
+            My Cart
+          </SheetTitle>
+          <SheetDescription className="text-left text-white">
             {itemsLength} items
           </SheetDescription>
         </SheetHeader>
