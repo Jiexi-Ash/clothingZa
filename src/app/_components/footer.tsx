@@ -1,10 +1,11 @@
+"use client";
 import React from "react";
 
 function Footer() {
   return (
-    <div className="my-10 flex items-baseline justify-center">
+    <footer className="flex items-baseline justify-center  py-10">
       <div className="text-2xl text-white">DESSIGNED-BY</div>
-    </div>
+    </footer>
   );
 }
 
