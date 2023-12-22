@@ -4,7 +4,6 @@ import React from "react";
 import Icon from "../icon";
 import { api } from "@/trpc/server";
 import UpdateStore from "../forms/update-store";
-import { getS3Url } from "@/lib/s3";
 import Image from "next/image";
 
 async function DashboardNav() {
@@ -14,7 +13,7 @@ async function DashboardNav() {
   const url = data.banner_key
     ? await api.store.getS3Url.query({ file_key: data.banner_key })
     : "";
-  console.log(data);
+
   return (
     <div className="l flex h-full w-full flex-col space-y-8 pt-10">
       <div className="lg:px-16">
