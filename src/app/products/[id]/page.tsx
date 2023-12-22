@@ -1,3 +1,4 @@
+import Footer from "@/app/_components/footer";
 import Navbar from "@/app/_components/navbar";
 import SizeAndPrice from "@/app/_components/products/sizeAndPrice";
 import {
@@ -73,6 +74,7 @@ async function ProductPage({ params }: Props) {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

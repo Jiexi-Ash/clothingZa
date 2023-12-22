@@ -15,6 +15,7 @@ import { AspectRatio } from "../_components/ui/aspect-ratio";
 import Image from "next/image";
 import { Separator } from "../_components/ui/separator";
 import Navbar from "../_components/navbar";
+import Footer from "../_components/footer";
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 type getAllProducts = RouterOutput["product"]["getAllProducts"];
@@ -32,6 +33,7 @@ async function ProductsPage() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

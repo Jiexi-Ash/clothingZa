@@ -4,6 +4,7 @@ import AddAddressForm from "../_components/forms/add-address";
 import { api } from "@/trpc/server";
 import { Button } from "../_components/ui/button";
 import { Separator } from "../_components/ui/separator";
+import Footer from "../_components/footer";
 
 export const metadata = {
   title: "Checkout",
@@ -65,6 +66,7 @@ async function CheckOutPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
