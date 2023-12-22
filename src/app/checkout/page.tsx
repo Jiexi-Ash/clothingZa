@@ -26,7 +26,7 @@ async function CheckOutPage() {
   const delivery = 100;
 
   return (
-    <div className="flex max-h-screen w-full flex-col  bg-darkbg bg-cover bg-no-repeat">
+    <div className="flex max-h-screen w-full flex-col">
       <Navbar />
       <div className="mt-10 flex max-h-full w-full overflow-auto px-20">
         <div className="h-full w-full  overflow-auto px-6">
