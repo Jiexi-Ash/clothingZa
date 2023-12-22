@@ -66,7 +66,6 @@ async function CheckOutPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
