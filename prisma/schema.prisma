@@ -11,13 +11,15 @@ datasource db {
 }
 
 model user {
-    id        String   @id @default(uuid())
-    email     String   @unique
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-    role      Role     @default(USER)
+    id        String     @id @default(uuid())
+    email     String     @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @default(now()) @updatedAt
+    role      Role       @default(USER)
     store     store[]
     Cart      cart[]
+    Shipping  Shipping[]
+    Order     Order[]
 
     @@index([email])
 }
@@ -79,6 +81,46 @@ model CartItem {
     cart           cart         @relation(fields: [cartId], references: [id], onDelete: Cascade)
     priceAndsizeId Int
     priceAndsize   priceAndsize @relation(fields: [priceAndsizeId], references: [id])
+}
+
+model Shipping {
+    id            String   @id @default(uuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    firstName     String
+    lastName      String
+    StreetAddress String
+    unitOrBldgNo  String
+    suburb        String
+    province      String
+    city          String
+    state         String
+    zip           String
+    country       String
+    phoneNumber   String
+    email         String
+    user          user?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId        String?
+}
+
+model Order {
+    id        String      @id @default(uuid())
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+    user      user?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    String?
+    OrderItem OrderItem[]
+}
+
+model OrderItem {
+    id             String   @id @default(uuid())
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    quantity       Int
+    orderId        String
+    order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    priceAndsizeId Int
+    price          Int
 }
 
 enum Role {
