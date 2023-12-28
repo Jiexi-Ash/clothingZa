@@ -43,9 +43,19 @@ function AddAddressForm() {
       city: "",
       suburb: "",
       province: "",
-      country: "",
+      country: "South Africa",
     },
   });
+
+  const { mutate: addShippingDetails } =
+    api.cart.addShippingDetails.useMutation({
+      onSuccess: () => {
+        form.reset();
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
 
   const onSubmit = (data: z.infer<typeof formData>) => {
     const {
@@ -62,6 +72,36 @@ function AddAddressForm() {
     } = data;
 
     console.log(data);
+
+    // check if inputs are not empty
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      emailAddress === "" ||
+      phoneNumber === "" ||
+      streetAddress === "" ||
+      complexOrBuilding === "" ||
+      city === "" ||
+      suburb === "" ||
+      province === "" ||
+      country === ""
+    ) {
+      return;
+    }
+
+    addShippingDetails({
+      firstName,
+      lastName,
+      email: emailAddress,
+      phoneNumber,
+      streetAddress,
+      unitOrBuildingNumber: complexOrBuilding,
+      city,
+      suburb,
+      province,
+      country,
+      zip: "0000",
+    });
   };
   return (
     <Form {...form}>

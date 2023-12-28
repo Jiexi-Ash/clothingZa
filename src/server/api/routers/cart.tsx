@@ -590,4 +590,84 @@ export const cartRouter = createTRPCRouter({
       });
     });
   }),
+  addShippingDetails: protectedProcedure
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string().email(),
+        phoneNumber: z.string(),
+        streetAddress: z.string(),
+        city: z.string(),
+        country: z.string(),
+        unitOrBuildingNumber: z.string(),
+        suburb: z.string(),
+        province: z.string(),
+        zip: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.userId;
+
+      // destructuring input
+      const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        streetAddress,
+        city,
+        country,
+        unitOrBuildingNumber,
+        suburb,
+        province,
+        zip,
+      } = input;
+
+      // check if input fields are not empty
+
+      if (
+        !firstName ||
+        !lastName ||
+        !email ||
+        !phoneNumber ||
+        !streetAddress ||
+        !city ||
+        !country ||
+        !unitOrBuildingNumber ||
+        !suburb ||
+        !province ||
+        !zip
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Please fill in all fields",
+        });
+      }
+
+      const shppingDetails = await ctx.db.shipping.findFirst({
+        where: {
+          userId: userId,
+        },
+      });
+
+      if (!shppingDetails) {
+        await ctx.db.shipping.create({
+          data: {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber,
+            StreetAddress: streetAddress,
+            city: city,
+            country: country,
+            unitOrBldgNo: unitOrBuildingNumber,
+            suburb: suburb,
+            province: province,
+            zip: zip,
+            userId: userId,
+          },
+        });
+      }
+    }),
 });
