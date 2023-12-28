@@ -36,9 +36,7 @@ async function CheckOutPage() {
           <AddAddressForm />
         </div>
         <div className="h-full w-full px-6">
-          <h2 className="mb-10 pl-6 text-2xl font-medium text-white">
-            Your Order
-          </h2>
+          <h2 className="mb-10 text-2xl font-medium text-white">Your Order</h2>
           <div className="flex flex-col space-y-4 border p-6">
             <div className="flex w-full justify-between text-white">
               <span>Items</span>
