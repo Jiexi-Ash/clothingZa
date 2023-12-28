@@ -61,7 +61,7 @@ async function CheckOutPage() {
             </div>
             <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
             {shipping && (
-              <Button className="w-full bg-white py-8 font-bold tracking-wide text-black">
+              <Button className="w-full bg-white py-8 font-bold tracking-wide text-black hover:bg-white/60">
                 PROCEED TO PAYMENT
               </Button>
             )}
