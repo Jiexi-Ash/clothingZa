@@ -13,6 +13,7 @@ export const metadata = {
 
 async function CheckOutPage() {
   const shipping = await api.cart.getUserShippingDetails.query();
+  console.log(shipping);
   const products = await api.cart.getUserCart.query();
   console.log(products);
 
