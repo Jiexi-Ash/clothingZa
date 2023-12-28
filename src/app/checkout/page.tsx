@@ -60,9 +60,11 @@ async function CheckOutPage() {
               <span>R{total?.toFixed(2)}</span>
             </div>
             <Separator className="h-[2px] w-full bg-gradient-to-r from-green-500 to-sky-500" />
-            <Button className="w-full bg-white py-8 font-bold tracking-wide text-black">
-              PROCEED TO PAYMENT
-            </Button>
+            {shipping && (
+              <Button className="w-full bg-white py-8 font-bold tracking-wide text-black">
+                PROCEED TO PAYMENT
+              </Button>
+            )}
           </div>
         </div>
       </div>
