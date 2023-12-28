@@ -670,4 +670,16 @@ export const cartRouter = createTRPCRouter({
         });
       }
     }),
+
+  getUserShippingDetails: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    const shippingDetails = await ctx.db.shipping.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return shippingDetails;
+  }),
 });
