@@ -18,6 +18,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@/trpc/react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { PencilIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 
 const formData = z.object({
   firstName: z.string(),
@@ -113,7 +115,22 @@ function AddAddressForm() {
       <Card className="w-full bg-transparent text-white">
         <CardHeader className="flex w-full flex-row items-center justify-between">
           <CardTitle>Ship To</CardTitle>
-          <PencilIcon className="h-4 w-4 cursor-pointer" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="" asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="group border-white/60 bg-transparent hover:border-white hover:bg-transparent"
+                >
+                  <PencilIcon className="h-4 w-4 cursor-pointer text-white/60 group-hover:text-white" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit Address</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardHeader>
         <CardContent className="text-sm">
           <div className="flex flex-col">
