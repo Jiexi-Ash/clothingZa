@@ -31,7 +31,7 @@ async function CheckOutPage() {
     <div className="flex max-h-screen w-full flex-col">
       <Navbar />
       <div className="mt-10 flex max-h-full w-full overflow-auto px-20">
-        <div className="h-full w-full  overflow-auto px-6">
+        <div className="h-full w-full  overflow-auto">
           <h1 className="mb-10 text-2xl font-medium text-white">Delivery</h1>
           <AddAddressForm />
         </div>
