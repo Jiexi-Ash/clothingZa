@@ -27,6 +27,7 @@ async function ProductsPage() {
     <div className="flex min-h-screen w-full flex-col bg-darkbg bg-cover bg-no-repeat">
       <Navbar />
       <div className="container relative mx-auto my-[60px] flex h-full w-full flex-col gap-10">
+        <h1 className="text-5xl font-bold text-white">All Products</h1>
         <div className="grid w-full gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {productsData.map((product) => (
             <ProductCard key={product.id} product={product} />
