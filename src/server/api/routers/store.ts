@@ -128,4 +128,29 @@ export const storeRouter = createTRPCRouter({
     
         return products;
       }),
+
+    getFeaturedStores: publicProcedure.query(async ({ ctx }) => {
+
+    //    RANDOM STORES take 4
+        const stores = await ctx.db.store.findMany({
+            take: 4,
+            select: {
+                id: true,
+                name: true,
+                address: true,
+                banner_key: true,
+            }
+        });
+        // const stores = await ctx.db.store.findMany({
+           
+        //     select: {
+        //         id: true,
+        //         name: true,
+        //         address: true,
+        //         banner_key: true,
+        //     }
+        // });
+
+        return stores;
+    }),
 });
